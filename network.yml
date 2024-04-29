@@ -1,0 +1,70 @@
+###########################################################
+# Docker Compose Network Configuration
+# @File: network.yml
+# @Author: Alan Szmyt
+# @Description: This file defines the network configurations for the Docker
+#               Compose setup. It includes settings for the default network
+#               using the bridge driver, customized with specific driver
+#               options to enhance network performance and connectivity between
+#               containers. Labels are used for metadata management, enhancing
+#               the discoverability and management of deployed services.
+#
+# Labels:
+#   - app.name: Name of the application or project.
+#   - app.env: Deployment environment (development, test, production).
+#   - app.version: Current version of the application.
+#   - app.description: Brief description of the application.
+#   - app.url: URL of the application or project homepage.
+#   - app.vendor: Vendor or organization name.
+#   - app.license: Licensing information for the application.
+#   - app.repository: Repository URL for source code.
+#   - app.maintainer: Maintainer contact information.
+#   - app.image: Default Docker image used in services.
+#   - app.stack: Information about the stack deployment.
+#
+# Network Settings:
+#   - Network Name: Dynamically set based on project name with bridge as the
+#       default driver.
+#   - IP Masquerade, ICC (Inter Container Communication), and other
+#       bridge-specific settings enabled.
+#   - Subnet and gateway are defined under IPAM configurations.
+#
+# Usage:
+#   This file should be included in your main docker-compose.yml under
+#   networks section to ensure all services can attach to the defined network.
+#
+###########################################################
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+    app.version: ${COMPOSE_PROJECT_VERSION}
+    app.description: ${COMPOSE_PROJECT_DESCRIPTION}
+    app.url: ${COMPOSE_PROJECT_URL}
+    app.vendor: ${COMPOSE_PROJECT_VENDOR}
+    app.license: ${COMPOSE_PROJECT_LICENSE}
+    app.repository: ${COMPOSE_PROJECT_REPOSITORY}
+    app.maintainer: ${COMPOSE_PROJECT_MAINTAINER}
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network
+    driver: bridge
+    attachable: true
+    # Network driver options:
+    # https://docs.docker.com/network/drivers/bridge/#options
+    driver_opts:
+      com.docker.network.bridge.name: ${COMPOSE_PROJECT_NAME}-bridge
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      # Explicitly set MTU for network performance optimization
+      com.docker.network.driver.mtu: "1500"
+      com.docker.network.container_iface_prefix: "eth"
+    # IPAM configuration to manage network addressing
+    ipam:
+      config:
+        - subnet: ${COMPOSE_PROJECT_SUBNET}
+          gateway: ${COMPOSE_PROJECT_GATEWAY}
+    # Apply labels to all networks.
+    # https://docs.docker.com/compose/compose-file/05-services/#labels
+    <<: [*labels]

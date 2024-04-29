@@ -1,0 +1,18 @@
+###########################################################
+# Docker Compose Configuration
+# @Project: homelab
+# @Author: szmyty
+# @Description: This Docker Compose file orchestrates the
+#               container setup for the main application
+#               services including web servers, databases,
+#               and backend APIs.
+###########################################################
+include:
+  - path:
+      - ./network.yml
+  - path:
+      - ./redis/redis.yml
+  - path:
+      - ./redisinsight/redisinsight.yml
+  - path:
+      - ./wiki/wiki.yml

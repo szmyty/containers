@@ -1,0 +1,44 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+include:
+  - ../redis/redis.yml
+services:
+  redisinsight:
+    extends:
+      file: ../common.yml
+      service: base
+    depends_on:
+      redis:
+        condition: service_healthy
+    hostname: ${COMPOSE_PROJECT_NAME}.${REDISINSIGHT_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-redisinsight
+    image: ${COMPOSE_PROJECT_NAME}/redisinsight:${REDISINSIGHT_VERSION}
+    build:
+      context: .
+      dockerfile: redisinsight.Dockerfile
+      args:
+        - REDISINSIGHT_VERSION=${REDISINSIGHT_VERSION}
+        - REDISINSIGHT_HEALTHCHECK_PATH=${REDISINSIGHT_HEALTHCHECK_PATH}
+    ports:
+      - ${REDISINSIGHT_EXPOSED_PORT}:${REDISINSIGHT_PORT}
+    environment:
+      - RI_APP_PORT=${REDISINSIGHT_PORT}
+      - RI_APP_HOST=0.0.0.0
+      - RI_LOG_LEVEL=info
+      - RI_FILES_LOGGER=true
+      - RI_STDOUT_LOGGER=true
+    volumes:
+      - ./redisinsight-healthcheck.bash:${REDISINSIGHT_HEALTHCHECK_PATH}
+      - ${REDISINSIGHT_VOLUME}:${REDISINSIGHT_DATA_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${REDISINSIGHT_HOSTNAME}
+
+volumes:
+  redisinsight_data:
+    name: ${REDISINSIGHT_VOLUME}
+    driver: local
+    <<: [*labels]

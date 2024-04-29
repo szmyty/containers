@@ -1,0 +1,9 @@
+services:
+  vscode:
+    image: linuxserver/code-server:${VSCODE_VERSION}
+    container_name: vscode
+    ports:
+      - "${VSCODE_PORT}:8443"
+    environment:
+      - "HASHED_PASSWORD:$VSCODE_PASSWORD"
+    restart: always

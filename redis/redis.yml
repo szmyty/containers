@@ -1,0 +1,35 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+services:
+  redis:
+    extends:
+      file: ../common.yml
+      service: base
+    hostname: ${COMPOSE_PROJECT_NAME}.${REDIS_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-redis
+    image: ${COMPOSE_PROJECT_NAME}/redis:${REDIS_VERSION}
+    build:
+      context: .
+      dockerfile: redis.Dockerfile
+      args:
+        - REDIS_VERSION=${REDIS_VERSION}
+        - REDIS_CONFIG_PATH=${REDIS_CONFIG_PATH}
+        - REDIS_HEALTHCHECK_PATH=${REDIS_HEALTHCHECK_PATH}
+    ports:
+      - ${REDIS_EXPOSED_PORT}:${REDIS_PORT}
+    volumes:
+      - ./redis.conf:${REDIS_CONFIG_PATH}
+      - ./redis-healthcheck.bash:${REDIS_HEALTHCHECK_PATH}
+      - ${REDIS_VOLUME}:${REDIS_DATA_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${REDIS_HOSTNAME}
+
+volumes:
+  redis_data:
+    name: ${REDIS_VOLUME}
+    driver: local
+    <<: [*labels]

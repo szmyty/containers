@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+docker compose \
+    --file homelab.yml \
+    --env-file homelab.env \
+    --env-file redis/redis.env \
+    --env-file redisinsight/redisinsight.env \
+    --env-file wiki/wiki.env \
+    --env-file wiki/wikidb/wikidb.env \
+    up redis redisinsight wikidb wiki \
+    "$@"

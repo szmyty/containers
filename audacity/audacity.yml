@@ -1,0 +1,11 @@
+services:
+  audacity:
+    image: linuxserver/audacity:${AUDACITY_VERSION}
+    container_name: audacity
+    ports:
+      - "${AUDACITY_PORT}:3000"
+    environment:
+      - "TITLE=Audacity"
+      - "CUSTOM_USER:${AUDACITY_USER}"
+      - "PASSWORD:${AUDACITY_PASSWORD}"
+    restart: always

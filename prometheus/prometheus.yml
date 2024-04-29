@@ -1,0 +1,31 @@
+#file: noinspection YAMLSchemaValidation
+services:
+  prometheus:
+    image: ${COMPOSE_PROJECT_NAME}/prometheus:0.0.1
+    hostname: prometheus
+    container_name: prometheus
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROMETHEUS_VERSION: ${PROMETHEUS_VERSION}
+        PROMETHEUS_PORT: ${PROMETHEUS_PORT}
+        CADDY_ADMIN_PORT: ${CADDY_ADMIN_PORT}
+    ports:
+      - ${PROMETHEUS_EXTERNAL_PORT}:${PROMETHEUS_PORT}
+    env_file:
+      - ../.env
+      - ./prometheus.env
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost || exit 0" ]
+      interval: 5s
+      timeout: 30s
+      retries: 3
+      start_period: 0s
+    networks:
+      main-network:
+        aliases:
+          - prometheus

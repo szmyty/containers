@@ -1,0 +1,55 @@
+services:
+  keycloak:
+    image: keycloak/keycloak:${KEYCLOAK_VERSION}
+    container_name: keycloak
+    depends_on:
+      keycloakdb:
+        condition: service_healthy
+    ports:
+      - ${KEYCLOAK_EXPOSED_PORT}:8443
+    restart: unless-stopped
+    env_file:
+      - ../.env
+      - ./keycloak.env
+    environment:
+      - KC_DB=postgres
+      - KC_DB_USERNAME=${KEYCLOAK_DB_USER}
+      - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD}
+      - KC_DB_URL=jdbc:postgresql://keycloakdb:5432/${KEYCLOAK_DB}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8443/health/ready || exit 0" ]
+      interval: 5s
+      timeout: 30s
+      retries: 3
+      start_period: 0s
+    command: start-dev
+    networks:
+      main-network:
+        aliases:
+          - keycloak
+
+  keycloakdb:
+    image: postgres:${KEYCLOAK_DB_VERSION}
+    hostname: keycloakdb
+    container_name: keycloakdb
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${KEYCLOAK_DB_USER}
+      - POSTGRES_PASSWORD=${KEYCLOAK_DB_PASSWORD}
+      - POSTGRES_DB=${KEYCLOAK_DB}
+    env_file:
+      - ../.env
+      - ./keycloak.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready --username ${KEYCLOAK_DB_USER} --dbname ${KEYCLOAK_DB} || exit 0" ]
+      timeout: 2m
+      retries: 1
+      start_period: 0s
+    networks:
+      main-network:
+        aliases:
+          - keycloakdb

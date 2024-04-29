@@ -1,0 +1,53 @@
+{
+    "search.exclude": {
+        "/public/locales/**": true,
+        "**/node_modules": true
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "env-*": true
+      },
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.DS_Store": true,
+        "**/.idea": true,
+        "**/.dart_tool/": true,
+        "**/flutter/bin/cache/": true,
+        "**/build/": true,
+        "**/node_modules": true,
+    },
+    // Important to disable for EditorConfig to apply correctly
+    // See: https://github.com/editorconfig/editorconfig-vscode/issues/153
+    "files.trimTrailingWhitespace": false,
+    "[shellscript]": {
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+            79
+        ]
+    },
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+            79
+        ]
+    },
+    "[yaml]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "editor.autoIndent": "advanced",
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        },
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+            79
+        ]
+    },
+    "dart.lineLength": 79,
+}

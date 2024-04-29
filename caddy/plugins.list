@@ -1,0 +1,10 @@
+github.com/greenpau/caddy-security
+github.com/greenpau/caddy-trace
+github.com/caddyserver/replace-response
+github.com/abiosoft/caddy-exec
+github.com/caddyserver/cache-handler
+github.com/greenpau/caddy-systemd
+github.com/mholt/caddy-events-exec
+github.com/zhangjiayin/caddy-geoip2
+github.com/neodyme-labs/user_agent_parse
+github.com/caddyserver/transform-encoder

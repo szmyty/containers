@@ -1,0 +1,140 @@
+# Global options: https://caddyserver.com/docs/caddyfile/options
+# https://caddyserver.com/docs/conventions#placeholders
+# https://caddyserver.com/docs/caddyfile/concepts#placeholders
+{
+    servers {
+        # Enabling metrics with Prometheus: https://caddyserver.com/docs/metrics
+        metrics
+    }
+    # Set the admin port.
+    admin :{$CADDY_ADMIN_PORT:2019}
+
+    log {
+        exclude http.handlers.geoip2 geoip2
+        output file {$CADDY_LOG_FILE} {
+            roll_size 1gb
+            roll_keep 5
+            roll_keep_for 720h
+        }
+        format filter {
+            wrap console
+            fields {
+                request>headers>User-Agent delete
+                request>headers>Cookie delete
+                request>headers>Authorization delete
+                request>headers>Proxy-Authorization delete
+                request>headers>Set-Cookie delete
+            }
+        }
+        level INFO
+    }
+
+    order geoip2_vars first
+
+    # Only configure databaseDirectory and editionID when autoupdate is not desired.
+    geoip2 {
+        accountId         "${GEOIP_ACCOUNT_ID}"
+        databaseDirectory "{$GEOIP_HOME}/"
+        licenseKey        "${GEOIP_LICENSE_KEY}"
+        lockFile          "{$GEOIP_HOME}/geoip2.lock"
+        editionID         "GeoLite2-City"
+        updateUrl         "{$GEOIP_UPDATES_URL}"
+        updateFrequency   86400 # 1 day in seconds
+    }
+
+    # General Options: https://caddyserver.com/docs/caddyfile/options#general-options
+    http_port {$CADDY_HTTP_PORT:80}
+    https_port {$CADDY_HTTPS_PORT:443}
+    storage file_system {$CADDY_DATA_DIR:/data}
+    storage_clean_interval 24h
+    renew_interval 10m
+    ocsp_interval 1h
+    grace_period 10s
+    shutdown_delay 5s
+
+    # debug
+
+    exec {
+        command echo
+        args "{system.hostname}" > test2.log
+        directory /opt/caddy
+        startup
+        timeout 0 # don't timeout
+    }
+
+    # TLS Options: https://caddyserver.com/docs/caddyfile/options#tls-options
+    email {$EMAIL}
+    acme_ca {$ACME_CA:https://acme-staging-v02.api.letsencrypt.org/directory}
+}
+
+import snippets/*
+
+# Redirect www subdomain by removing it.
+www.{$DOMAIN:localhost} {
+    redir https://{$DOMAIN:localhost}{uri} permanent
+}
+
+# Proxied route.
+(proxied) {
+    # Redirect www subdomain by removing it.
+    www.{args[0]}.{$DOMAIN:localhost} {
+        redir https://{args[0]}.{$DOMAIN:localhost}{uri} permanent
+    }
+
+    http://{args[0]}.{$DOMAIN:localhost}, https://{args[0]}.{$DOMAIN:localhost} {
+        import redirect
+        import dns
+        route {
+            import common
+            reverse_proxy {args[1]}
+        }
+    }
+}
+
+http://{$DOMAIN:localhost}, https://{$DOMAIN:localhost} {
+    import redirect
+    import dns
+    import common
+
+    route /geoip {
+        request_header +X-Forwarded-For {172.19.0.1}
+        geoip2_vars wild
+        header geoip-country "{geoip2.country_code}"
+
+        trace tag="geoip" response_debug=yes
+
+        respond "{geoip2.country_code} {http.vars.user_agent.os} {vars.*} {client_ip}" 200
+    }
+
+    # Enable logging to the console.
+    # log {
+    #    format transform "{common_log}"
+    # }
+
+    encode zstd gzip
+    templates
+
+    root * /opt/caddy/fileserver
+
+    file_server {
+        browse
+        precompressed zstd br gzip
+        hide *.symlink
+    }
+
+    handle /health {
+        skip_log
+        @goingDown vars {http.shutting_down} true
+        respond @goingDown "Bye-bye in {http.time_until_shutdown}" 503
+        respond 200
+    }
+}
+
+# Subdomain for the matchering web app.
+import proxied matchering http://matchering:8360
+
+# Subdomain for the n64 emulator web app.
+import proxied n64 http://n64:{$N64_PORT}
+
+# Subdomain for the prometheus monitoring web app.
+import proxied prometheus http://prometheus:{$PROMETHEUS_PORT}

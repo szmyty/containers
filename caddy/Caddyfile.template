@@ -1,0 +1,4 @@
+# TLS & DNS configuration file with placeholder.
+(dns) {
+${DNS_CONFIGURATION}
+}

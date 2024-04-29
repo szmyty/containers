@@ -1,0 +1,71 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+    app.version: ${COMPOSE_PROJECT_VERSION}
+    app.description: ${COMPOSE_PROJECT_DESCRIPTION}
+    app.url: ${COMPOSE_PROJECT_URL}
+    app.vendor: ${COMPOSE_PROJECT_VENDOR}
+    app.license: ${COMPOSE_PROJECT_LICENSE}
+    app.repository: ${COMPOSE_PROJECT_REPOSITORY}
+    app.maintainer: ${COMPOSE_PROJECT_MAINTAINER}
+
+# Shared default healthcheck settings for all containers.
+x-healthcheck: &healthcheck
+  # Healthcheck settings for containers.
+  # https://docs.docker.com/compose/compose-file/05-services/#healthcheck
+  healthcheck:
+    # Command to run to check container health.
+    test: ["CMD-SHELL", "curl --fail http://localhost || exit 0"]
+    # Time between running the test command.
+    interval: 5s
+    # Time to wait before considering the check failed.
+    timeout: 30s
+    # Number of consecutive failures needed to consider the container unhealthy.
+    retries: 3
+    # Time to wait before starting the healthcheck.
+    start_period: 0s
+
+# Shared settings for all containers.
+x-defaults: &defaults
+  # Restart policy for containers.
+  # https://docs.docker.com/compose/compose-file/05-services/#restart
+  restart: unless-stopped
+
+  # https://docs.docker.com/compose/compose-file/05-services/#dns
+  dns:
+    - ${DNS_PRIMARY}
+    - ${DNS_SECONDARY}
+
+  # Hostnames mapped to IP address that will be added to each container's
+  #   /etc/hosts file.
+  # https://docs.docker.com/compose/compose-file/05-services/#extra_hosts
+  extra_hosts:
+    # Add host.docker.internal to extra_hosts for Windows and Mac.
+    # https://docs.docker.com/docker-for-windows/networking/#use-cases-and-workarounds
+    - "host.docker.internal:host-gateway"
+
+  # Environment files to read environment variables from.
+  # https://docs.docker.com/compose/compose-file/05-services/#env_file
+  env_file:
+    - homelab.env
+    - redis/redis.env
+    - redisinsight/redisinsight.env
+    - wiki/wiki.env
+
+  # Global environment variables for all containers.
+  # https://docs.docker.com/compose/compose-file/05-services/#environment
+  environment:
+    # Set the timezone for the container.
+    TZ: ${TZ}
+    no_proxy: ".${DOMAIN},0.0.0.0,localhost,127.0.0.1,::1"
+    NO_PROXY: ".${DOMAIN},0.0.0.0,localhost,127.0.0.1,::1"
+
+  # Apply healthcheck and labels to all containers.
+  # https://docs.docker.com/compose/compose-file/05-services/#labels
+  # https://docs.docker.com/compose/compose-file/05-services/#healthcheck
+  <<: [*healthcheck, *labels]
+
+services:
+  base:
+    # Apply default settings to all containers.
+    <<: *defaults

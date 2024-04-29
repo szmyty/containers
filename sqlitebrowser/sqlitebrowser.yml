@@ -1,0 +1,13 @@
+services:
+  sqlitebrowser:
+    image: linuxserver/sqlitebrowser:${SQLITEBROWSER_VERSION}
+    container_name: sqlitebrowser
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "${SQLITEBROWSER_PORT}:3000"
+    environment:
+      - "TITLE=SQLiteBrowser"
+      - "CUSTOM_USER:${SQLITEBROWSER_USER}"
+      - "PASSWORD:${SQLITEBROWSER_PASSWORD}"
+    restart: always

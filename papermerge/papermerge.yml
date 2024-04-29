@@ -1,0 +1,56 @@
+services:
+  owncloud:
+    image: owncloud/server:${OWNCLOUD_VERSION}
+    container_name: owncloud
+    ports:
+      - "${OWNCLOUD_PORT}:8080"
+    depends_on:
+      - owncloud-mariadb
+      - owncloud-redis
+    restart: always
+    healthcheck:
+      test: [ "CMD", "/usr/bin/healthcheck" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - "owncloud_files:/mnt/data"
+
+  owncloud-mariadb:
+    image: mariadb:10.6 # minimum required ownCloud version is 10.9
+    container_name: owncloud_mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${OWNCLOUD_DB_ROOT_PASSWORD}
+      - MYSQL_USER=${OWNCLOUD_DB_USERNAME}
+      - MYSQL_PASSWORD=${OWNCLOUD_DB_PASSWORD}
+      - MYSQL_DATABASE=${OWNCLOUD_DB_NAME}
+    command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=${OWNCLOUD_DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "owncloud_database:/var/lib/mysql"
+
+  owncloud-redis:
+    image: redis:6
+    container_name: owncloud_redis
+    restart: always
+    command: ["--databases", "1"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "owncloud_redis:/data"
+
+volumes:
+  owncloud_files:
+    driver: local
+  owncloud_database:
+    driver: local
+  owncloud_redis:
+    driver: local

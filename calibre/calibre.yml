@@ -1,0 +1,14 @@
+services:
+  calibre:
+    image: linuxserver/calibre-web:${CALIBRE_VERSION}
+    container_name: calibre
+    ports:
+      - "${CALIBRE_PORT}:8083"
+    environment:
+      - "DOCKER_MODS=linuxserver/mods:universal-calibre"
+#    volumes:
+#      - /path/to/data:/config
+#      - /path/to/calibre/library:/books
+    restart: always
+
+

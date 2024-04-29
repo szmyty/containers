@@ -1,0 +1,23 @@
+services:
+  grafana:
+    image: grafana/grafana-oss:${GRAFANA_VERSION}
+    ports:
+      - ${GRAFANA_PORT}:3000
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost || exit 0" ]
+      interval: 5s
+      timeout: 30s
+      retries: 3
+      start_period: 0s
+#    networks:
+#      network:
+#        aliases:
+#          - grafana
+
+volumes:
+  grafana-storage:
+    driver: local
+    name: ${GRAFANA_STORAGE_VOLUME}

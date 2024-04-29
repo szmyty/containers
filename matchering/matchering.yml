@@ -1,0 +1,14 @@
+services:
+  matchering:
+    image: sergree/matchering-web:${MATCHERING_VERSION}
+    hostname: matchering
+    container_name: matchering
+    ports:
+      - "${MATCHERING_PORT}:8360"
+    restart: always
+    volumes:
+      - "mgw-data:/app/data"
+
+volumes:
+  mgw-data:
+    driver: local

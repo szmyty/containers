@@ -1,0 +1,43 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+include:
+  - ./wikidb/wikidb.yml
+services:
+  wiki:
+    extends:
+      file: ../common.yml
+      service: base
+    depends_on:
+      wikidb:
+        condition: service_healthy
+    hostname: ${COMPOSE_PROJECT_NAME}.${WIKI_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-wiki
+    image: ${COMPOSE_PROJECT_NAME}/wiki:${WIKI_VERSION}
+    build:
+      context: .
+      dockerfile: wiki.Dockerfile
+      args:
+        - WIKI_VERSION=${WIKI_VERSION}
+        - WIKI_CONFIG_PATH=${WIKI_CONFIG_PATH}
+        - WIKI_HEALTHCHECK_PATH=${WIKI_HEALTHCHECK_PATH}
+    ports:
+      - ${WIKI_EXPOSED_PORT}:${WIKI_PORT}
+    volumes:
+      - ./wiki.conf.yml:${WIKI_CONFIG_PATH}
+      - ./wiki-healthcheck.bash:${WIKI_HEALTHCHECK_PATH}
+      - ${WIKI_VOLUME}:${WIKI_DATA_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${WIKI_HOSTNAME}
+    env_file:
+      - ./wiki.env
+      - ./wikidb/wikidb.env
+
+volumes:
+  wiki_data:
+    name: ${WIKI_VOLUME}
+    driver: local
+    <<: [*labels]

@@ -1,0 +1,53 @@
+include:
+#  - ../grafana/grafana.yml
+  - ../keycloak/keycloak.yml
+  - ../prometheus/prometheus.yml
+
+services:
+  caddy:
+    image: ${COMPOSE_PROJECT_NAME}/caddy:0.0.1
+    hostname: caddy
+    container_name: caddy
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+#      grafana:
+#        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DNS_PROVIDER: ${DNS_PROVIDER}
+    ports:
+      - ${CADDY_EXPOSED_HTTP_PORT}:${CADDY_HTTP_PORT}
+      - ${CADDY_EXPOSED_HTTPS_PORT}:${CADDY_HTTPS_PORT}
+      - ${CADDY_ADMIN_EXPOSED_PORT}:${CADDY_ADMIN_PORT}
+    env_file:
+      - ../.env
+      - ./caddy.env
+      - ../prometheus/prometheus.env
+      - ../n64/n64.env
+      - ../keycloak/keycloak.env
+    restart: unless-stopped
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+#      - ${FILESERVER_DIRECTORY}:/opt/caddy/fileserver
+#    sysctls:
+#      net.core.rmem_max: 2500000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      main-network:
+        aliases:
+          - caddy
+
+volumes:
+  caddy-data:
+    driver: local
+    name: ${CADDY_DATA_VOLUME}
+  caddy-config:
+    driver: local
+    name: ${CADDY_CONFIG_VOLUME}

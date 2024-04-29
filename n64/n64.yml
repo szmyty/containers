@@ -1,0 +1,18 @@
+services:
+  n64:
+    image: ${COMPOSE_PROJECT_NAME}/n64:${N64_VERSION}
+    hostname: n64
+    container_name: n64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${N64_EXPOSED_PORT}:${N64_PORT}
+    env_file:
+      - ../.env
+      - ./n64.env
+    restart: unless-stopped
+    networks:
+      main-network:
+        aliases:
+          - n64
