@@ -1,0 +1,22 @@
+# Ignore everything
+**
+
+# Allow Dockerfiles in any directory
+!**/Dockerfile*
+
+# Allow docker-compose files
+!**/docker-compose*.yml
+
+# White-list the specific files and directories necessary for the build
+!src/
+!lib/
+!bin/
+!scripts/
+
+# Include specific file types necessary for builds
+!**/*.sh
+!**/*.bash
+
+# Exclude unwanted files from directories that are included
+src/**/*.log
+src/**/*.tmp
