@@ -50,4 +50,14 @@
         ]
     },
     "dart.lineLength": 79,
+    "background.fullscreen": {
+        "images": ["file:///${workspaceFolder}/assets/images/background.png"],
+        "opacity": 0.91,
+        "size": "cover",
+        "position": "center",
+        "interval": 0
+    },
+    "background.customImages": [
+        "file:///${workspaceFolder}/assets/images/background.png"
+    ],
 }

@@ -1,11 +1,13 @@
 {
-    "recommendations": [
-        "ms-azuretools.vscode-docker",
-        "davidanson.vscode-markdownlint",
-        "editorconfig.editorconfig",
-        "foxundermoon.shell-format",
-        "timonwong.shellcheck",
-        "yzhang.markdown-all-in-one",
-        "irongeek.vscode-env"
-    ]
+  "recommendations": [
+    "ms-azuretools.vscode-docker",
+    "davidanson.vscode-markdownlint",
+    "editorconfig.editorconfig",
+    "foxundermoon.shell-format",
+    "timonwong.shellcheck",
+    "yzhang.markdown-all-in-one",
+    "irongeek.vscode-env",
+    "icrawl.discord-vscode",
+    "shalldie.background"
+  ]
 }
