@@ -51,6 +51,7 @@ x-defaults: &defaults
     - redis/redis.env
     - redisinsight/redisinsight.env
     - wiki/wiki.env
+    - mongodb/mongodb.env
 
   # Global environment variables for all containers.
   # https://docs.docker.com/compose/compose-file/05-services/#environment
@@ -63,7 +64,8 @@ x-defaults: &defaults
   # Apply healthcheck and labels to all containers.
   # https://docs.docker.com/compose/compose-file/05-services/#labels
   # https://docs.docker.com/compose/compose-file/05-services/#healthcheck
-  <<: [*healthcheck, *labels]
+  # <<: [*healthcheck, *labels]
+  <<: [*labels]
 
 services:
   base:

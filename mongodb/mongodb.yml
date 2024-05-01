@@ -1,0 +1,38 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+services:
+  mongodb:
+    extends:
+      file: ../common.yml
+      service: base
+    hostname: ${COMPOSE_PROJECT_NAME}.${MONGODB_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-mongodb
+    image: ${COMPOSE_PROJECT_NAME}/mongodb:${MONGODB_VERSION}
+    build:
+      context: .
+      dockerfile: mongodb.Dockerfile
+      args:
+        - MONGODB_VERSION=${MONGODB_VERSION}
+        - MONGODB_CONFIG_PATH=${MONGODB_CONFIG_PATH}
+        - MONGODB_HEALTHCHECK_PATH=${MONGODB_HEALTHCHECK_PATH}
+    ports:
+      - ${MONGODB_EXPOSED_PORT}:${MONGODB_PORT}
+    volumes:
+      - ./mongodb.conf:${MONGODB_CONFIG_PATH}
+      - ./mongodb-healthcheck.bash:${MONGODB_HEALTHCHECK_PATH}
+      - ${MONGODB_VOLUME}:${MONGODB_DATA_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${MONGODB_HOSTNAME}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+volumes:
+  mongodb_data:
+    name: ${MONGODB_VOLUME}
+    driver: local
+    <<: [*labels]

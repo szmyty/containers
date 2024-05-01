@@ -7,5 +7,6 @@ docker compose \
     --env-file redisinsight/redisinsight.env \
     --env-file wiki/wiki.env \
     --env-file wiki/wikidb/wikidb.env \
-    up redis redisinsight wikidb wiki \
+    --env-file mongodb/mongodb.env \
+    up redis redisinsight wikidb wiki mongodb \
     "$@"

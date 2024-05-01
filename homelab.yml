@@ -16,3 +16,5 @@ include:
       - ./redisinsight/redisinsight.yml
   - path:
       - ./wiki/wiki.yml
+  - path:
+      - ./mongodb/mongodb.yml
