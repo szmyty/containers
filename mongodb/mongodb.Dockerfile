@@ -24,8 +24,14 @@ ENV MONGODB_HEALTHCHECK_PATH=${MONGODB_HEALTHCHECK_PATH}
 # Copy the MongoDB health check script to the container.
 COPY mongodb-healthcheck.bash ${MONGODB_HEALTHCHECK_PATH}
 
+# Switch to root to change permissions.
+USER root
+
 # Set the MongoDB health check script as executable.
 RUN chmod +x ${MONGODB_HEALTHCHECK_PATH}
+
+# Switch back to 'mongod' user.
+USER mongod
 
 # Set the MongoDB health check command using the health check script.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD ${MONGODB_HEALTHCHECK_PATH}
