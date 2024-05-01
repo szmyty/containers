@@ -28,13 +28,13 @@ ENV MONGO_EXPRESS_HEALTHCHECK_PATH=${MONGO_EXPRESS_HEALTHCHECK_DIR}/${MONGO_EXPR
 COPY ${MONGO_EXPRESS_HEALTHCHECK_SCRIPT} ${MONGO_EXPRESS_HEALTHCHECK_PATH}
 
 # Switch to root to change permissions.
-USER root
+# USER root
 
 # Set the Mongo Express health check script as executable.
 RUN chmod +x ${MONGO_EXPRESS_HEALTHCHECK_PATH}
 
 # Switch back to 'mongod' user.
-USER mongod
+# USER mongod
 
 # Set the Mongo Express health check command using the health check script.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD ${MONGO_EXPRESS_HEALTHCHECK_PATH}

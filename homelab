@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Entrypoint to run the homelab system.
 # SERVICES="redis redisinsight wikidb wiki mongodb"
-SERVICES="mongodb mongo-express"
+SERVICES="mongo-express"
 
 # Initialize command as an array
 cmd=("docker" "compose")

@@ -3,15 +3,16 @@ x-labels: &labels
     app.name: ${COMPOSE_PROJECT_NAME}
 
 include:
-  - ../mongodb/mongodb.yml
+  - ../mongodb.yml
 services:
   mongo-express:
     extends:
-      file: ../common.yml
+      file: ../../common.yml
       service: base
     depends_on:
       mongodb:
-        condition: service_healthy
+        condition: service_started
+        # condition: service_healthy
     hostname: ${COMPOSE_PROJECT_NAME}.${MONGO_EXPRESS_HOSTNAME}
     container_name: ${COMPOSE_PROJECT_NAME}-mongo-express
     image: ${COMPOSE_PROJECT_NAME}/mongo-express:${MONGO_EXPRESS_VERSION}
@@ -19,7 +20,7 @@ services:
       context: .
       dockerfile: mongo-express.Dockerfile
       args:
-        - MONGO_EXPRESS_VERSION=$MONGO_EXPRESS_VERSION}
+        - MONGO_EXPRESS_VERSION=${MONGO_EXPRESS_VERSION}
         - MONGO_EXPRESS_CONFIG_PATH=${MONGO_EXPRESS_CONFIG_PATH}
         - MONGO_EXPRESS_HEALTHCHECK_DIR=${MONGO_EXPRESS_HEALTHCHECK_DIR}
         - MONGO_EXPRESS_HEALTHCHECK_SCRIPT=${MONGO_EXPRESS_HEALTHCHECK_SCRIPT}
@@ -36,7 +37,7 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@${MONGODB_HOSTNAME}:${MONGODB_PORT}/
       ME_CONFIG_BASICAUTH: false
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
 # volumes:
