@@ -37,7 +37,7 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@${MONGODB_HOSTNAME}:${MONGODB_PORT}/
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@${COMPOSE_PROJECT_NAME}.${MONGODB_HOSTNAME}:${MONGODB_PORT}/
       ME_CONFIG_BASICAUTH: false
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
 # volumes:
