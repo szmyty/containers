@@ -1,0 +1,46 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+include:
+  - ../mongodb/mongodb.yml
+services:
+  mongo-express:
+    extends:
+      file: ../common.yml
+      service: base
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    hostname: ${COMPOSE_PROJECT_NAME}.${MONGO_EXPRESS_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-mongo-express
+    image: ${COMPOSE_PROJECT_NAME}/mongo-express:${MONGO_EXPRESS_VERSION}
+    build:
+      context: .
+      dockerfile: mongo-express.Dockerfile
+      args:
+        - MONGO_EXPRESS_VERSION=$MONGO_EXPRESS_VERSION}
+        - MONGO_EXPRESS_CONFIG_PATH=${MONGO_EXPRESS_CONFIG_PATH}
+        - MONGO_EXPRESS_HEALTHCHECK_DIR=${MONGO_EXPRESS_HEALTHCHECK_DIR}
+        - MONGO_EXPRESS_HEALTHCHECK_SCRIPT=${MONGO_EXPRESS_HEALTHCHECK_SCRIPT}
+    ports:
+      - ${MONGO_EXPRESS_EXPOSED_PORT}:${MONGO_EXPRESS_PORT}
+    volumes:
+      # - ./mongo-express.conf:${MONGO_EXPRESS_CONFIG_PATH}
+      - ./${MONGO_EXPRESS_HEALTHCHECK_SCRIPT}:${MONGO_EXPRESS_HEALTHCHECK_DIR}/${MONGO_EXPRESS_HEALTHCHECK_SCRIPT}
+      # - ${MONGO_EXPRESS_VOLUME}:${MONGO_EXPRESS_DATA_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${MONGO_EXPRESS_HOSTNAME}
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+# volumes:
+#   mongodb_data:
+#     name: ${MONGO_EXPRESS_VOLUME}
+#     driver: local
+#     <<: [*labels]

@@ -48,10 +48,11 @@ x-defaults: &defaults
   # https://docs.docker.com/compose/compose-file/05-services/#env_file
   env_file:
     - homelab.env
-    - redis/redis.env
-    - redisinsight/redisinsight.env
-    - wiki/wiki.env
+    # - redis/redis.env
+    # - redisinsight/redisinsight.env
+    # - wiki/wiki.env
     - mongodb/mongodb.env
+    - mongodb/mongo-express/mongo-express.env
 
   # Global environment variables for all containers.
   # https://docs.docker.com/compose/compose-file/05-services/#environment

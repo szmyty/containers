@@ -17,7 +17,7 @@ function stop_containers() {
     local containers
     containers=$(docker container ls --all --filter "label=${label}" --format "{{.Names}}")
     if [[ -n "${containers}" ]]; then
-        echo "${MAGENTA}${containers}${NC}"
+        echo "${containers}"
         # shellcheck disable=SC2086
         docker container stop ${containers} 2>/dev/null
     fi
@@ -30,7 +30,7 @@ function remove_containers() {
     local containers
     containers=$(docker container ls --all --filter "label=${label}" --format "{{.Names}}")
     if [[ -n "${containers}" ]]; then
-        echo "${MAGENTA}${containers}${NC}"
+        echo "${containers}"
         # shellcheck disable=SC2086
         docker container rm ${containers} 2>/dev/null
     fi
@@ -43,7 +43,7 @@ function remove_volumes() {
     local volumes
     volumes=$(docker volume ls --filter "label=${label}" --format "{{.Name}}")
     if [[ -n "${volumes}" ]]; then
-        echo "${MAGENTA}${volumes}${NC}"
+        echo "${volumes}"
         # shellcheck disable=SC2086
         docker volume rm ${volumes} 2>/dev/null
     fi
@@ -56,7 +56,7 @@ function remove_images() {
     local images
     images=$(docker image ls --filter "label=${label}" --format "{{.Repository}}:{{.Tag}}")
     if [[ -n "${images}" ]]; then
-        echo "${MAGENTA}${images}${NC}"
+        echo "${images}"
         # shellcheck disable=SC2086
         docker image rm ${images} 2>/dev/null
     fi
@@ -69,7 +69,7 @@ function remove_networks() {
     local networks
     networks=$(docker network ls --filter "label=${label}" --format "{{.Name}}")
     if [[ -n "${networks}" ]]; then
-        echo "${MAGENTA}${networks}${NC}"
+        echo "${networks}"
         # shellcheck disable=SC2086
         docker network rm ${networks} 2>/dev/null
     fi
@@ -87,8 +87,8 @@ function main() {
     echo "Starting Docker cleanup for label: ${label}"
     stop_containers "${label}"
     remove_containers "${label}"
-    remove_volumes "${label}"
     remove_images "${label}"
+    remove_volumes "${label}"
     remove_networks "${label}"
     clean_build_cache
     echo "Docker clean-up complete."

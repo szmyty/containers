@@ -10,11 +10,13 @@
 include:
   - path:
       - ./network.yml
-  - path:
-      - ./redis/redis.yml
-  - path:
-      - ./redisinsight/redisinsight.yml
-  - path:
-      - ./wiki/wiki.yml
+  #   - path:
+  #       - ./redis/redis.yml
+  #   - path:
+  #       - ./redisinsight/redisinsight.yml
+  #   - path:
+  #       - ./wiki/wiki.yml
   - path:
       - ./mongodb/mongodb.yml
+  - path:
+      - ./mongodb/mongo-express/mongo-express.yml

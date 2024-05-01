@@ -18,11 +18,12 @@ ENV MONGODB_CONFIG_PATH=${MONGODB_CONFIG_PATH}
 COPY mongodb.conf ${MONGODB_CONFIG_PATH}
 
 # Set the MongoDB health check script path as an environment variable.
-ARG MONGODB_HEALTHCHECK_PATH=/usr/local/bin/mongodb-healthcheck.bash
-ENV MONGODB_HEALTHCHECK_PATH=${MONGODB_HEALTHCHECK_PATH}
+ARG MONGODB_HEALTHCHECK_DIR=/usr/local/bin
+ARG MONGODB_HEALTHCHECK_SCRIPT=mongodb-healthcheck.bash
+ENV MONGODB_HEALTHCHECK_PATH=${MONGODB_HEALTHCHECK_DIR}/${MONGODB_HEALTHCHECK_SCRIPT}
 
 # Copy the MongoDB health check script to the container.
-COPY mongodb-healthcheck.bash ${MONGODB_HEALTHCHECK_PATH}
+COPY ${MONGODB_HEALTHCHECK_SCRIPT} ${MONGODB_HEALTHCHECK_PATH}
 
 # Switch to root to change permissions.
 USER root
