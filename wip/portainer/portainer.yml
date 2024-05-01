@@ -1,3 +1,7 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
 services:
   portainer:
     image: portainer/portainer-ce:${PORTAINER_VERSION}-alpine

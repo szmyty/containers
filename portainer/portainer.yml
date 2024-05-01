@@ -1,0 +1,37 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+services:
+  portainer:
+    extends:
+      file: ../common.yml
+      service: base
+    hostname: ${COMPOSE_PROJECT_NAME}.${PORTAINER_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-${PORTAINER_IMAGE_NAME}
+    image: ${COMPOSE_PROJECT_NAME}/${PORTAINER_IMAGE_NAME}:${PORTAINER_VERSION}
+    command: -H unix:///var/run/docker.sock --admin-password="$PORTAINER_ADMIN_PASSWORD"
+    build:
+      context: .
+      dockerfile: portainer.Dockerfile
+      args:
+        - PORTAINER_VERSION=${PORTAINER_VERSION}
+        - PORTAINER_CONFIG_PATH=${PORTAINER_CONFIG_PATH}
+        - PORTAINER_HEALTHCHECK_PATH=${PORTAINER_HEALTHCHECK_PATH}
+    ports:
+      - ${PORTAINER_EXPOSED_PORT}:${PORTAINER_PORT}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./portainer.conf:${PORTAINER_CONFIG_PATH}
+      - ./portainer-healthcheck.bash:${PORTAINER_HEALTHCHECK_PATH}
+      - ${PORTAINER_VOLUME}:${PORTAINER_DATA_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${PORTAINER_HOSTNAME}
+
+volumes:
+  portainer_data:
+    name: ${PORTAINER_VOLUME}
+    driver: local
+    <<: [*labels]
