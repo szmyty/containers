@@ -2,7 +2,7 @@
 # https://caddyserver.com/docs/conventions#placeholders
 # https://caddyserver.com/docs/caddyfile/concepts#placeholders
 {
-	auto_https off
+	# auto_https off
 
 	# Set the admin port.
 	admin :2019
@@ -64,19 +64,19 @@
 
 # Proxied route.
 (proxied) {
-    # Redirect www subdomain by removing it.
-    www.{args[0]}.{$DOMAIN:localhost} {
-        redir https://{args[0]}.{$DOMAIN:localhost}{uri} permanent
-    }
+	# Redirect www subdomain by removing it.
+	www.{args[0]}.{$DOMAIN:localhost} {
+		redir https://{args[0]}.{$DOMAIN:localhost}{uri} permanent
+	}
 
-    http://{args[0]}.{$DOMAIN:localhost}, https://{args[0]}.{$DOMAIN:localhost} {
-        import redirect
-        import dns
-        route {
-            import common
-            reverse_proxy {args[1]}
-        }
-    }
+	http://{args[0]}.{$DOMAIN:localhost}, https://{args[0]}.{$DOMAIN:localhost} {
+		import redirect
+		import dns
+		route {
+			import common
+			reverse_proxy {args[1]}
+		}
+	}
 }
 
 http://{$DOMAIN:localhost}, https://{$DOMAIN:localhost} {
