@@ -29,6 +29,8 @@ services:
       default:
         aliases:
           - ${COMPOSE_PROJECT_NAME}.${PORTAINER_HOSTNAME}
+    env_file:
+      - portainer.env
 
 volumes:
   portainer_data:
