@@ -1,0 +1,107 @@
+# Global options: https://caddyserver.com/docs/caddyfile/options
+# https://caddyserver.com/docs/conventions#placeholders
+# https://caddyserver.com/docs/caddyfile/concepts#placeholders
+{
+	auto_https off
+
+	# Set the admin port.
+	admin :2019
+
+	# log {
+	# 	output file /caddy.log {
+	# 		roll_size 1gb
+	# 		roll_keep 5
+	# 		roll_keep_for 720h
+	# 	}
+	# 	format filter {
+	# 		wrap console
+	# 		fields {
+	# 			request>headers>User-Agent delete
+	# 			request>headers>Cookie delete
+	# 			request>headers>Authorization delete
+	# 			request>headers>Proxy-Authorization delete
+	# 			request>headers>Set-Cookie delete
+	# 		}
+	# 	}
+	# 	level INFO
+	# }
+
+	# General Options: https://caddyserver.com/docs/caddyfile/options#general-options
+	http_port 80
+	https_port 443
+	storage file_system /data
+	storage_clean_interval 24h
+	renew_interval 10m
+	ocsp_interval 1h
+	grace_period 10s
+	shutdown_delay 5s
+
+	# TLS Options: https://caddyserver.com/docs/caddyfile/options#tls-options
+	email {$EMAIL:admin@${DOMAIN}}
+	acme_ca {$ACME_CA:https://acme-staging-v02.api.letsencrypt.org/directory}
+}
+
+# Common options.
+(common) {
+	# Removes the 'Server' Response header that containers information about the Caddy server.
+	# https://futurestud.io/tutorials/caddy-remove-the-server-response-header
+	header /* {
+		-Server
+	}
+}
+
+(dns) {
+	tls internal
+}
+
+# Redirect http requests to https.
+(redirect) {
+	@http {
+		protocol http
+	}
+	redir @http https://{host}{uri} permanent
+}
+
+# Proxied route.
+(proxied) {
+    # Redirect www subdomain by removing it.
+    www.{args[0]}.{$DOMAIN:localhost} {
+        redir https://{args[0]}.{$DOMAIN:localhost}{uri} permanent
+    }
+
+    http://{args[0]}.{$DOMAIN:localhost}, https://{args[0]}.{$DOMAIN:localhost} {
+        import redirect
+        import dns
+        route {
+            import common
+            reverse_proxy {args[1]}
+        }
+    }
+}
+
+http://{$DOMAIN:localhost}, https://{$DOMAIN:localhost} {
+	import redirect
+	import dns
+	import common
+
+	encode zstd gzip
+	templates
+
+	root * /opt/caddy/fileserver
+
+	file_server {
+		browse
+		precompressed zstd br gzip
+		hide *.symlink
+	}
+
+	handle /health {
+		skip_log
+		@goingDown vars {http.shutting_down} true
+		respond @goingDown "Bye-bye in {http.time_until_shutdown}" 503
+		respond 200
+	}
+}
+
+# Subdomain reverse proxy for the Portainer web app.
+import proxied {$PORTAINER_SUBDOMAIN_NAME} {$PORTAINER_PROTOCOL}://{$PORTAINER_HOSTNAME}:{$PORTAINER_PORT}

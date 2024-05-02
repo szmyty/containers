@@ -1,0 +1,47 @@
+x-labels: &labels
+  labels:
+    app.name: ${COMPOSE_PROJECT_NAME}
+
+include:
+  - path:
+      - ../portainer/portainer.yml
+
+services:
+  caddy:
+    extends:
+      file: ../common.yml
+      service: base
+    hostname: ${COMPOSE_PROJECT_NAME}.${CADDY_HOSTNAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-${CADDY_IMAGE_NAME}
+    image: ${COMPOSE_PROJECT_NAME}/${CADDY_IMAGE_NAME}:${CADDY_VERSION}
+    build:
+      context: .
+      dockerfile: caddy.Dockerfile
+      args:
+        - CADDY_VERSION=${CADDY_VERSION}
+        - CADDY_CONFIG_PATH=${CADDY_CONFIG_PATH}
+        - CADDY_HEALTHCHECK_DIR=${CADDY_HEALTHCHECK_DIR}
+        - CADDY_HEALTHCHECK_SCRIPT=${CADDY_HEALTHCHECK_SCRIPT}
+    ports:
+      - ${CADDY_EXPOSED_HTTP_PORT}:${CADDY_HTTP_PORT}
+      - ${CADDY_EXPOSED_HTTPS_PORT}:${CADDY_HTTPS_PORT}
+      - ${CADDY_ADMIN_EXPOSED_PORT}:${CADDY_ADMIN_PORT}
+    volumes:
+      - ./Caddyfile:${CADDY_CONFIG_PATH}
+      - ./${CADDY_HEALTHCHECK_SCRIPT}:${CADDY_HEALTHCHECK_DIR}/${CADDY_HEALTHCHECK_SCRIPT}
+      - ${CADDY_DATA_VOLUME}:${CADDY_DATA_DIR}
+      - ${CADDY_CONFIG_VOLUME}:${CADDY_CONFIG_DIR}
+    networks:
+      default:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}.${CADDY_HOSTNAME}
+
+volumes:
+  caddy_data:
+    name: ${CADDY_DATA_VOLUME}
+    driver: local
+    <<: [*labels]
+  caddy_config:
+    name: ${CADDY_CONFIG_VOLUME}
+    driver: local
+    <<: [*labels]
