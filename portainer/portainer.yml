@@ -10,7 +10,7 @@ services:
     hostname: ${COMPOSE_PROJECT_NAME}.${PORTAINER_HOSTNAME}
     container_name: ${COMPOSE_PROJECT_NAME}-${PORTAINER_IMAGE_NAME}
     image: ${COMPOSE_PROJECT_NAME}/${PORTAINER_IMAGE_NAME}:${PORTAINER_VERSION}
-    command: -H unix:///var/run/docker.sock --admin-password="$PORTAINER_ADMIN_PASSWORD"
+    # command: --host unix:///var/run/docker.sock --admin-password="$PORTAINER_ADMIN_PASSWORD"
     build:
       context: .
       dockerfile: portainer.Dockerfile

@@ -95,6 +95,17 @@ http://{$DOMAIN:localhost}, https://{$DOMAIN:localhost} {
 		hide *.symlink
 	}
 
+	# Reverse proxy for Portainer
+	handle_path /portainer* {
+		reverse_proxy {$PORTAINER_PROTOCOL}://{$PORTAINER_HOSTNAME}:{$PORTAINER_PORT} {
+			# Optionally, you can strip the path here if needed by Portainer
+			# but usually Portainer handles its base path internally.
+			# transport http {
+			#     strip_prefix /portainer
+			# }
+		}
+	}
+
 	handle /health {
 		skip_log
 		@goingDown vars {http.shutting_down} true
@@ -104,7 +115,7 @@ http://{$DOMAIN:localhost}, https://{$DOMAIN:localhost} {
 }
 
 # Subdomain reverse proxy for the Portainer web app.
-import proxied {$PORTAINER_SUBDOMAIN_NAME} {$PORTAINER_PROTOCOL}://{$PORTAINER_HOSTNAME}:{$PORTAINER_PORT}
+# import proxied {$PORTAINER_SUBDOMAIN_NAME} {$PORTAINER_PROTOCOL}://{$PORTAINER_HOSTNAME}:{$PORTAINER_PORT}
 
 # Subdomain reverse proxy for the RedisInsight web app.
 # import proxied {$REDISINSIGHT_SUBDOMAIN_NAME} {$REDISINSIGHT_PROTOCOL}://{$REDISINSIGHT_HOSTNAME}:{$REDISINSIGHT_PORT}

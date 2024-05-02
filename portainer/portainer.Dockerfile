@@ -32,3 +32,9 @@ RUN chmod +x ${PORTAINER_HEALTHCHECK_PATH}
 
 # # Set the Portainer health check command using the health check script.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD ${PORTAINER_HEALTHCHECK_PATH}
+
+# Adding a custom entrypoint script.
+COPY portainer-entrypoint.bash /portainer-entrypoint.bash
+RUN chmod +x /portainer-entrypoint.bash
+
+ENTRYPOINT ["/portainer-entrypoint.bash"]
