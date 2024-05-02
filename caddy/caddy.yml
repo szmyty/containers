@@ -35,6 +35,9 @@ services:
       default:
         aliases:
           - ${COMPOSE_PROJECT_NAME}.${CADDY_HOSTNAME}
+    env_file:
+      - caddy.env
+      - ../portainer/portainer.env
 
 volumes:
   caddy_data:

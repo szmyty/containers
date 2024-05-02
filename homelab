@@ -2,7 +2,7 @@
 # Entrypoint to run the homelab system.
 
 # List of services
-SERVICES="portainer"
+SERVICES="portainer caddy"
 
 # Initialize command as an array
 cmd=("docker" "compose")
@@ -10,7 +10,7 @@ cmd=("docker" "compose")
 # Add fixed parts of the command
 cmd+=("--file" "homelab.yml")
 cmd+=("--env-file" "homelab.env")
-# cmd+=("--env-file" "caddy/caddy.env")
+cmd+=("--env-file" "caddy/caddy.env")
 # cmd+=("--env-file" "redis/redis.env")
 # cmd+=("--env-file" "redisinsight/redisinsight.env")
 # cmd+=("--env-file" "wiki/wiki.env")
