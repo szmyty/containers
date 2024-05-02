@@ -105,3 +105,6 @@ http://{$DOMAIN:localhost}, https://{$DOMAIN:localhost} {
 
 # Subdomain reverse proxy for the Portainer web app.
 import proxied {$PORTAINER_SUBDOMAIN_NAME} {$PORTAINER_PROTOCOL}://{$PORTAINER_HOSTNAME}:{$PORTAINER_PORT}
+
+# Subdomain reverse proxy for the RedisInsight web app.
+import proxied {$REDISINSIGHT_SUBDOMAIN_NAME} {$REDISINSIGHT_PROTOCOL}://{$REDISINSIGHT_HOSTNAME}:{$REDISINSIGHT_PORT}
