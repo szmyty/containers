@@ -7,24 +7,25 @@
 	# Set the admin port.
 	admin :2019
 
-	# log {
-	# 	output file /caddy.log {
-	# 		roll_size 1gb
-	# 		roll_keep 5
-	# 		roll_keep_for 720h
-	# 	}
-	# 	format filter {
-	# 		wrap console
-	# 		fields {
-	# 			request>headers>User-Agent delete
-	# 			request>headers>Cookie delete
-	# 			request>headers>Authorization delete
-	# 			request>headers>Proxy-Authorization delete
-	# 			request>headers>Set-Cookie delete
-	# 		}
-	# 	}
-	# 	level INFO
-	# }
+	log {
+		output stdout
+		# output file /caddy.log {
+		# 	roll_size 1gb
+		# 	roll_keep 5
+		# 	roll_keep_for 720h
+		# }
+		format filter {
+			wrap console
+			fields {
+				request>headers>User-Agent delete
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+				request>headers>Proxy-Authorization delete
+				request>headers>Set-Cookie delete
+			}
+		}
+		level DEBUG
+	}
 
 	# General Options: https://caddyserver.com/docs/caddyfile/options#general-options
 	http_port 80
