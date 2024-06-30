@@ -66,4 +66,9 @@ x-defaults: &defaults
 services:
   base:
     # Apply default settings to all containers.
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: homelab:latest
+    container_name: base
     <<: *defaults

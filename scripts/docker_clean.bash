@@ -94,5 +94,11 @@ function main() {
     echo "Docker clean-up complete."
 }
 
+
+function container_ips() {
+    docker inspect --filter '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} {{.Name}}' $(docker ps --quiet)
+}
+
+
 # Entry point
 main "$@"
